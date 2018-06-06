@@ -43,6 +43,5 @@ var irc = (function(socket, nickname, password, channels)
   return socket;
 });
 
-var sock = irc(new require('net').Socket(), 'Sebivor', '', '##newboston');
-sock.connect({ 'host': 'irc.freenode.net'
-             , 'port': '6667' });
+var sock = irc(require('tls').connect({ 'host': 'irc.freenode.net'
+                                      , 'port': '7000' }), 'Sebivor`', '', '##newboston');
