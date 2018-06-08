@@ -62,7 +62,7 @@ var irc = (function(socket, nickname, password, channel)
             , 'handler': urbandict
             }
           , { 'pattern': /^\:([^ !]+)(?:\![^ ]+)? (?:PRIVMSG|NOTICE) (\#[^ ]+) \:\.(src|source|github)$/
-            , 'handler': (match) => { sockwrite('PRIVMSG ' + match[1] + ' :My source code can be found at https://github.com/Sebbyastian/newbotonian/blob/master/irc.js\r\n'); }
+            , 'handler': (match) => { socket.write('PRIVMSG ' + match[1] + ' :My source code can be found at https://github.com/Sebbyastian/newbotonian/blob/master/irc.js\r\n'); }
             }
           , { 'pattern': /^\:([^ !]+)(?:\![^ ]+)? (?:PRIVMSG|NOTICE) (\#[^ ]+) \:(.*)$/
             , 'handler': urlscrape
