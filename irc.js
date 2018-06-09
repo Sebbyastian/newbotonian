@@ -1,7 +1,8 @@
 var irc = (function(socket, nickname, password, channel)
 { var dom = require('xmldom').DOMParser;
   var fetch = require('node-fetch');
-  var url = require('url-regex')();
+  var url = require('url-regex')(), history = [];
+  var nodemw = require('nodemw');
   var data;
 
   function msg(socket, destination, message) { var cmd = 'PRIVMSG ' + destination + ' :' + message;
@@ -9,18 +10,23 @@ var irc = (function(socket, nickname, password, channel)
                                              }
 
   function urbandict(match) { fetch('http://api.urbandictionary.com/v0/define?term=' + encodeURIComponent(match[3])).then(res => res.json()).then(res => { var list = res['list'];
-                                                                                                                                                           var x = Number(match[2] || 0);
-                                                                                                                                                           if (x >= 0 && x < list.length) { msg(socket, match[1], match[3] + ' [' + x + '/' + list.length + ']: ' + list[x]['definition']); }
+                                                                                                                                                           var x = Number(match[2] || 1);
+                                                                                                                                                           if (x > 1 && x <= list.length) { msg(socket, match[1], match[3] + ' [' + x + '/' + list.length + ']: ' + list[x - 1]['definition']); }
                                                                                                                                                            else { msg(socket, match[1], 'I see your request for ' + match[3] + ' and I don\'t like it.'); }
                                                                                                                                                          });
                             }
 
   function urlscrape(match) { var m = match[2].match(url);
                               if (m === null) { return; }
-                              m.forEach(function(u){ fetch(u).then(res => res.text()).then(res => { var title = (new dom()).parseFromString(res).getElementsByTagName('title');
-                                                                                                    if (title.length == 0) { return; }
-                                                                                                    msg(socket, match[1], '<' + u + '> -- ' + title[0].childNodes);
-                                                                                                  });
+                              m.forEach(function(u){ var index = history.indexOf(u);
+                                                     if (index < 0 || u.Date.now() - history[index].time > 900000) {
+                                                         fetch(u).then(res => res.text()).then(res => { var title = (new dom()).parseFromString(res).getElementsByTagName('title');
+                                                                                                        if (title.length == 0) { return; }
+                                                                                                        msg(socket, match[1], '<' + u + '> -- ' + title[0].childNodes);
+                                                                                                      });
+                                                     }
+                                                     if (index < 0) { index = history.push(u) - 1; }
+                                                     history[index].time = u.time;
                                                    });
                             } 
 
