@@ -427,7 +427,7 @@ function stream(name, stream) { stream.put = stream.put || (ev => stream.forEach
                               }
 
 var console_stream = () => ({ 'put': ev => console.log(JSON.stringify(ev, (k, v) => v && v.name ? v.name : v)) });
-var browser_stream = fn => require('./ui_logic.js').https_server_stream({'port': 8080}, fn);
+// var browser_stream = fn => require('./ui_logic.js').https_server_stream({'port': 8080}, fn);
 
 var plain_text = require('net').connect;
 var signed_tls = require('tls').connect;
